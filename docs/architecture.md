@@ -1,11 +1,36 @@
-# homelab-logs-dashboard — Architecture
+# Architecture
 
-Existing log shipper -> Loki streams with environment, host and source labels -> Grafana LogQL panels.
+This project connects its data source to its Grafana dashboard through the components shown below.
+
+## Overview
+
+This diagram shows the data path for this project.
+
+```mermaid
+graph LR
+  A[Log shippers] -->|send labeled streams to| B[Loki]
+  B -->|serves LogQL queries to| C[Grafana dashboard]
+```
 
 ## Components
 
-- [dashboards/](../dashboards): Grafana dashboard definitions
+### Data source
 
-## Data interpretation
+Log shippers -> Loki streams labeled environment, host and source -> Grafana LogQL panels.
 
-The failure clues panel is a broad text search for failed, panic, fatal and i/o error. It is intended for manual review, not a reliable count or alert.
+### Dashboard
+
+`dashboards/homelab-logs.json` contains the Grafana dashboard definition.
+
+## Data flow
+
+Log shippers -> Loki streams labeled environment, host and source -> Grafana LogQL panels. Grafana evaluates dashboard queries against the selected data source and label values.
+
+## Directory layout
+
+```text
+.
+├── dashboards/  Grafana dashboard JSON files
+├── docs/        Documentation source
+└── README.md    Project overview and quick links
+```

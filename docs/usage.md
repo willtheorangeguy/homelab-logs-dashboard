@@ -1,17 +1,17 @@
-# homelab-logs-dashboard — Dashboard Usage
+# Dashboard usage
 
-Import the JSON files using **Grafana → Dashboards → New → Import**. Set the data source and variables listed in [configuration](./configuration.md).
+Import the JSON files using **Grafana → Dashboards → New → Import**. Set the data source and variables listed in [configuration](configuration.md).
 
 ## Homelab Logs
 
-Source: [homelab-logs.json](../dashboards/homelab-logs.json). Refresh: `30s`.
+Source: [`dashboards/homelab-logs.json`](https://github.com/willtheorangeguy/homelab-logs-dashboard/blob/HEAD/dashboards/homelab-logs.json). Refresh: `30s`.
 
 <!-- Screenshot: after adding homelab-logs.png to .github/icons/homelab-logs-dashboard/, replace this comment with ![Homelab Logs](https://raw.githubusercontent.com/willtheorangeguy/.github/main/icons/homelab-logs-dashboard/homelab-logs.png). -->
 
 ### Panels
 
 | Panel | Type | What it shows |
-|---|---|---|
+| --- | --- | --- |
 | Log rate by source | timeseries | Journal, Docker, and Alpine syslog lines per second for the selected hosts. |
 | Log rate by host | timeseries | Use this to identify hosts with unusually high or missing log volume. |
 | Recent logs | logs | See the query reference below. |

@@ -1,4 +1,4 @@
-# homelab-logs-dashboard — Quickstart
+# Getting started
 
 ## Prerequisites
 
@@ -13,4 +13,4 @@ This dashboard reads Loki streams directly through Grafana; it has no Prometheus
 ## Confirm data
 
 In Grafana Explore, query Loki with the environment and host labels used by the dashboard.
-For missing data, see [troubleshooting](./troubleshooting.md).
+For missing data, see [Troubleshooting](troubleshooting.md).
