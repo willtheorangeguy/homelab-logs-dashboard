@@ -1,0 +1,229 @@
+{
+  "uid": "homelab-logs",
+  "title": "Homelab Logs",
+  "description": "Browse host journals, Docker logs, and Alpine syslog collected by Alloy. Select a host to narrow the log view; these queries do not define alerts.",
+  "tags": [
+    "logs",
+    "loki",
+    "alloy"
+  ],
+  "schemaVersion": 41,
+  "version": 1,
+  "editable": false,
+  "refresh": "30s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "loki_ds",
+        "label": "Loki data source",
+        "type": "datasource",
+        "query": "loki",
+        "hide": 0,
+        "refresh": 1,
+        "multi": false,
+        "includeAll": false
+      },
+      {
+        "name": "environment",
+        "label": "Loki environment label",
+        "type": "textbox",
+        "query": "homelab",
+        "hide": 0,
+        "refresh": 0,
+        "multi": false,
+        "includeAll": false,
+        "current": {
+          "text": "homelab",
+          "value": "homelab"
+        }
+      },
+      {
+        "name": "host",
+        "label": "Host",
+        "type": "query",
+        "datasource": {
+          "type": "loki",
+          "uid": "${loki_ds}"
+        },
+        "query": {
+          "type": 1,
+          "label": "host",
+          "stream": "{environment=\"$environment\"}"
+        },
+        "refresh": 2,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": []
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Log rate by source",
+      "description": "Journal, Docker, and Alpine syslog lines per second for the selected hosts.",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki_ds}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (source) (rate({environment=\"$environment\",host=~\"$host\"}[5m]))",
+          "queryType": "range",
+          "legendFormat": "{{source}}",
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki_ds}"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Log rate by host",
+      "description": "Use this to identify hosts with unusually high or missing log volume.",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki_ds}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (host) (rate({environment=\"$environment\",host=~\"$host\"}[5m]))",
+          "queryType": "range",
+          "legendFormat": "{{host}}",
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki_ds}"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "logs",
+      "title": "Recent logs",
+      "gridPos": {
+        "h": 13,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki_ds}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{environment=\"$environment\",host=~\"$host\"}",
+          "queryType": "range",
+          "maxLines": 500,
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki_ds}"
+          }
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true
+      }
+    },
+    {
+      "id": 4,
+      "type": "logs",
+      "title": "Failure clues for manual review",
+      "description": "A broad text filter for investigation, not an alert or reliable error count.",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 21
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki_ds}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{environment=\"$environment\",host=~\"$host\"} |~ \"(?i)(failed|panic|fatal|i/o error)\"",
+          "queryType": "range",
+          "maxLines": 200,
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki_ds}"
+          }
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true
+      }
+    }
+  ]
+}
